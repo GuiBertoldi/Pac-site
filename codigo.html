@@ -1,0 +1,266 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Estagiários</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+
+	<!-- Header -->
+	<header id="header">
+		<div class="logo"><a href="index.html"><img src="images/teste.png" alt="logo"></div>
+		<a href="#menu"><span>Menu</span></a>
+	</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="generic.html">Participações</a></li>
+					<li><a href="codigo.html">Código do robô</a></li>
+				</ul>
+			</nav>
+
+		<!-- Content -->
+		<!--
+			Note: To show a background image, set the "data-bg" attribute below
+			to the full filename of your image. This is used in each section to set
+			the background image.
+		-->
+			<section id="post" class="wrapper bg-img" data-bg="banner.jpg">
+				<div class="inner">
+					<article class="box">
+						<header>
+							<h2 align="center">ALGORITIMO SEGUIDOR DE LINHA</h2>
+						</header>
+						<div class="content">
+							<p align="left" font-style="consolas">
+
+                // Portas driver motor<br>
+                #define PININ1 2<br>
+                #define PININ2 4<br>
+                #define PININ3 5<br>
+                #define PININ4 7<br>
+                #define PINENA 3<br>
+                #define PINENB 6<br><br>
+                // Portas led rgb<br>
+                #define PINLEDR 11<br>
+                #define PINLEDG 9<br>
+                #define PINLEDB 10<br><br>
+                // Portas sensor QTR<br>
+                #define SENSOR1 A0<br>
+                #define SENSOR2 A1<br>
+                #define SENSOR3 A2<br>
+                #define SENSOR4 A3<br>
+                #define SENSOR5 A4<br>
+                #define SENSOR6 A5<br><br>
+                // Valores de ajustes para o seguidor de linha MIF<br>
+                #define TRESHOLD 750                       // Valor de referencia para cor da linha branca<br>
+                #define SPEED0 240                          // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 1 1 0 0) <br>
+                #define SPEED1 200                          // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 1 1 1 0) <br>
+                #define SPEED2 180                          // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 0 1 0 0) <br>
+                #define SPEED3 150                          // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 0 1 1 0) <br> 
+                #define SPEED4 100                          // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 0 1 1 1) <br>
+                #define SPEED5 0                            // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 0 0 1 0) <br>
+                #define SPEED6 0                            // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 0 0 1 1) <br>
+                #define SPEED7 120                          // Valor de 0 a 255 para velocidade com a seguinte leitura do sensor (0 0 0 0 0 1) <br>
+                #define RUNTIME 18500                      // Valor para executar o percurso <br><br>
+                void setup() {<br>
+                  Serial.begin(9600);<br>
+                  rgbControl(255, 0, 0, 1000);<br>
+                  rgbControl(0, 255, 0, 1000);<br>
+                  rgbControl(0, 0, 255, 1000);<br>
+                }<br><br>
+                void loop() {<br>
+                  followLineMEF();<br>
+                  //readSensors();<br>
+                 //motorOption('6',255,255);<br>
+                }<br><br>
+                void motorControl(int speedLeft, int speedRight) {<br>
+                  // Função para controle do driver de motor<br>
+                  // Definições das portas digitais<br>
+                  pinMode(PININ1, OUTPUT);<br>
+                  pinMode(PININ2, OUTPUT);<br>
+                  pinMode(PININ3, OUTPUT);<br>
+                  pinMode(PININ4, OUTPUT);<br>
+                  pinMode(PINENA, OUTPUT);<br>
+                  pinMode(PINENB, OUTPUT);<br><br>
+                  // Ajustes motor da esquerda<br>
+                  if (speedLeft < 0) {<br>
+                    speedLeft = -speedLeft;<br>
+                    digitalWrite (PININ3, HIGH);<br>
+                    digitalWrite (PININ4, LOW);<br>
+                  } else {<br>
+                    digitalWrite (PININ3, LOW);<br>
+                    digitalWrite (PININ4, HIGH);<br>
+                  }<br><br>
+                  // Ajustes motor da direita<br>
+                  if (speedRight < 0) {<br>
+                    speedRight = -speedRight;<br>
+                    digitalWrite (PININ1, LOW);<br>
+                    digitalWrite (PININ2, HIGH);<br>
+                  } else {<br>
+                    digitalWrite (PININ1, HIGH);<br>
+                    digitalWrite (PININ2, LOW);<br>
+                  }<br>
+                  analogWrite (PINENA, speedLeft);<br>
+                  analogWrite (PINENB, speedRight);<br>
+                }<br><br>
+                void motorOption(char option, int speedLeft, int speedRight) {<br>
+                  // Função para controle de motor com pre definições<br>
+                  switch (option) {<br>
+                    case '6': // Esquerda<br>
+                      motorControl(-speedLeft, speedRight);<br>
+                      break;<br>
+                    case '4': // Direita<br>
+                      motorControl(speedLeft, -speedRight);<br>
+                      break;<br>
+                    case '2': // Trás<br>
+                      motorControl(-speedLeft, -speedRight);<br>
+                      break;<br>
+                    case '8': // Frente<br>
+                      motorControl(speedLeft, speedRight);<br>
+                      break;<br>
+                    case '0': // Parar<br>
+                      motorControl(0, 0);<br>
+                      break;<br>
+                  }<br>
+                }<br><br>
+                bool motorStop(long runtime, long currentTime) {<br>
+                  // Função de parada do robô<br>
+                  if (millis() >= (runtime + currentTime)) {<br>
+                    motorOption('0', 0, 0);<br>
+                    int cont = 0;<br>
+                    while (true) {<br>
+                      rgbControl(255, 0, 0, 500);<br>
+                      rgbControl(0, 0, 0, 500);<br>
+                      cont++;<br>
+                    }<br>
+                    return false;<br>
+                  }<br>
+                  return true;<br>
+                }<br><br>
+                void rgbControl(int red, int green, int blue, long rumtime) {<br>
+                  // Função para controle do led rgb<br>
+                  pinMode(PINLEDR, OUTPUT);<br>
+                  pinMode(PINLEDG, OUTPUT);<br>
+                  pinMode(PINLEDB, OUTPUT);<br>
+                  digitalWrite(PINLEDR, HIGH);<br>
+                  digitalWrite(PINLEDG, HIGH);<br>
+                  digitalWrite(PINLEDB, HIGH);<br>
+                  analogWrite(PINLEDR, 255 - red);<br>
+                  analogWrite(PINLEDG, 255 - green);<br>
+                  analogWrite(PINLEDB, 255 - blue);<br>
+                  delay(rumtime);<br>
+                }<br><br>
+                void readSensors(void) {<br>
+                  // Função para leitura dos sensores<br>
+                  Serial.print(analogRead(A0));<br>
+                  Serial.print(' ');<br>
+                  Serial.print(analogRead(A1));<br>
+                  Serial.print(' ');<br>
+                  Serial.print(analogRead(A2));<br>
+                  Serial.print(' ');<br>
+                  Serial.print(analogRead(A3));<br>
+                  Serial.print(' ');<br>
+                  Serial.print(analogRead(A4));<br>
+                  Serial.print(' ');<br>
+                  Serial.println(analogRead(A5));<br>
+                  Serial.print(' ');<br>
+                }<br><br>
+                void followLineMEF(void) {<br>
+                  // Função para controle do seguidor de linha em modo de maquina de estado finita<br>
+                  bool flag = true;<br>
+                  long currentTime = millis();<br>
+                  while (flag) {<br>
+                    flag = motorStop(RUNTIME, currentTime);<br>
+                    // leitura do sensor (1 1 1 1 1 1)<br>
+                    if (analogRead(A0) <= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) <= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED0);<br>
+
+                      // leitura do sensor (0 1 1 1 1 0)<br>
+                    } else if ( analogRead(A0) >= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED0);<br><br>
+
+                      // leitura do sensor (0 0 1 1 0 0)<br>
+                    } else if ( analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED0);<br><br>
+
+                      // leitura do sensor (0 1 1 1 0 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED1);<br><br>
+
+                      // leitura do sensor (0 0 1 1 1 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) >= TRESHOLD ) {
+                      motorOption('8', SPEED1, SPEED0);<br><br>
+
+                      // leitura do sensor (0 0 1 0 0 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED2);<br><br>
+
+                      // leitura do sensor (0 0 0 1 0 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD ) {
+                      motorOption('8', SPEED2, SPEED0);<br><br>
+
+                      // leitura do sensor (0 1 1 0 0 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED3);<br><br>
+
+                      // leitura do sensor (0 0 0 1 1 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED3, SPEED0);<br><br>
+
+                      // leitura do sensor (1 1 1 0 0 0)<br>
+                    } else if (analogRead(A0) <= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) <= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED4);<br><br>
+
+                      // leitura do sensor (0 0 0 1 1 1)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) <= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) <= TRESHOLD) {
+                      motorOption('8', SPEED4, SPEED0);<br><br>
+
+                      // leitura do sensor (0 1 0 0 0 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED5);<br><br>
+
+                      // leitura do sensor (0 0 0 0 1 0)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED5, SPEED0);<br><br>
+
+                      // leitura do sensor (1 1 0 0 0 0)<br>
+                    } else if (analogRead(A0) <= TRESHOLD && analogRead(A1) <= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('8', SPEED0, SPEED6);<br><br>
+
+                      // leitura do sensor (0 0 0 0 1 1)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) <= TRESHOLD && analogRead(A5) <= TRESHOLD) {
+                      motorOption('8', SPEED6, SPEED0);<br><br>
+
+                      // leitura do sensor (1 0 0 0 0 0)<br>
+                    } else if (analogRead(A0) <= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) >= TRESHOLD) {
+                      motorOption('6', SPEED7, SPEED7);<br><br>
+
+                      // leitura do sensor (0 0 0 0 0 1)<br>
+                    } else if (analogRead(A0) >= TRESHOLD && analogRead(A1) >= TRESHOLD && analogRead(A2) >= TRESHOLD && analogRead(A3) >= TRESHOLD && analogRead(A4) >= TRESHOLD && analogRead(A5) <= TRESHOLD) {
+                      motorOption('4', SPEED7, SPEED7);<br>
+                    }<br>
+                  }<br>
+                  motorOption('0', 0, 0);<br>
+                }<br>
+<br>
+							</p>
+						</div>
+					</article>
+					<footer id="post" class="wrapper bg-img" data-bg="banner.jpg" > 				
+					</footer>
+				</div>
+			</section>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
